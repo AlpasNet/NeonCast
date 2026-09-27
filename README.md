@@ -15,7 +15,7 @@ and retain links to the original resource and the official AlpasNet website.
 Licensed under the PolyForm Noncommercial License 1.0.0:
 https://polyformproject.org/licenses/noncommercial/1.0.0/
 
-#About
+# About
 
 NeonCast is a retro-futuristic toolkit designed for streamers and content creators who want to build a distinctive visual identity for OBS and Twitch. Inspired by the neon aesthetics of the 1980s, it combines synthwave colors, customizable themes and practical streaming tools in one unified interface.
 
