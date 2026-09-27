@@ -6,66 +6,117 @@ header('Pragma: no-cache');
 header('Expires: 0');
 
 $config = [
-    'pseudo' => 'Your_Pseudo',
     'avatar' => 'assets/avatar.jpg',
 
     // Configurable wallpaper for the overlay OUTSIDE the game display area.
     // Leave backgroundImage empty to use backgroundColor only.
-    'backgroundImage' => 'assets/backgrounds/background.png',
+    'backgroundImage' => 'assets/background.png',
     'backgroundColor' => '#071127',
     'backgroundOpacity' => 1.0,
     'backgroundFit' => 'cover',       // cover or contain
     'backgroundPosition' => 'center center',
 
     // IMPORTANT: the game display area is transparent in OBS.
-    // Keep this set to 'transparent' so the Game Capture placed below the Browser Source remains visible.
     'gameAreaColor' => 'transparent',
 
-    // Existing Twitch channel used by the overlay. Change it here if needed.
-    'twitchChannel' => 'your_twitch_channel',
-
     // Animated background inside the Twitch chat panel.
-    // MP4 and WebM are both supported by OBS Browser Source.
-    // Leave both paths empty to disable the animated background.
     'chatVideoMp4' => 'assets/twitch.mp4',
     'chatVideoWebm' => '',
-    'chatVideoOpacity' => 0.62, // 0 = invisible, 1 = fully visible
-    'chatVideoFit' => 'cover', // cover or contain
-
-    'socials' => [
-        'youtube' => [
-            'label' => 'YouTube',
-            'display' => 'youtube.com/your_link',
-            'url' => 'https://www.youtube.com/your_link',
-        ],
-        'twitch' => [
-            'label' => 'Twitch',
-            'display' => 'twitch.tv/your_link',
-            'url' => 'https://www.twitch.tv/your_link',
-        ],
-        'discord' => [
-            'label' => 'Discord',
-            'display' => 'discord.gg/your_link',
-            'url' => 'https://discord.gg/your_link',
-        ],
-    ],
+    'chatVideoOpacity' => 0.62,
+    'chatVideoFit' => 'cover',
 ];
 
-$games = [
-    'your_code' => [
-        'title' => 'YOUR GAME NAME',
-        'subtitle' => 'Online',
-        'cover' => '../covers/your_picture_file.jpg',
-    ],
-];
+function loadOverlayProfile(string $file): array {
+    $profile = [
+        'pseudo' => 'Seije',
+        'youtube' => 'https://www.youtube.com/@AlpasNet',
+        'twitch' => 'https://www.twitch.tv/alpasnet',
+        'discord' => 'https://discord.gg/wtZwc7hHCr',
+    ];
+    if (!is_file($file)) return $profile;
+    $decoded = json_decode((string)file_get_contents($file), true);
+    if (!is_array($decoded)) return $profile;
+    foreach ($profile as $key => $fallback) {
+        if (array_key_exists($key, $decoded) && is_string($decoded[$key])) {
+            $profile[$key] = trim($decoded[$key]);
+        }
+    }
+    return $profile;
+}
+
+function socialDisplay(string $url, string $network): string {
+    $url = trim($url);
+    if ($url === '') return 'Not configured';
+    $parts = parse_url($url);
+    if (!is_array($parts)) return $url;
+    $host = preg_replace('/^www\./i', '', (string)($parts['host'] ?? '')) ?? '';
+    $path = rtrim((string)($parts['path'] ?? ''), '/');
+    if ($network === 'youtube' && $host === 'youtu.be') return $host . $path;
+    return $host . $path;
+}
+
+function twitchChannelFromUrl(string $url): string {
+    $parts = parse_url(trim($url));
+    if (!is_array($parts)) return '';
+    $host = strtolower(preg_replace('/^www\./i', '', (string)($parts['host'] ?? '')) ?? '');
+    if ($host !== 'twitch.tv') return '';
+    $path = trim((string)($parts['path'] ?? ''), '/');
+    if ($path === '') return '';
+    $first = explode('/', $path, 2)[0];
+    return strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $first) ?? '');
+}
+
+$profile = loadOverlayProfile(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'profile.json');
+$themes = require __DIR__ . DIRECTORY_SEPARATOR . 'themes.php';
+
+$gamesFile = __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'games.json';
+$games = [];
+if (is_file($gamesFile)) {
+    $decodedGames = json_decode((string)file_get_contents($gamesFile), true);
+    if (is_array($decodedGames)) {
+        foreach ($decodedGames as $code => $gameData) {
+            if (!is_array($gameData)) continue;
+            $safeCode = strtolower(trim((string)($gameData['code'] ?? $code)));
+            $safeCode = preg_replace('/[^a-z0-9_-]+/', '-', $safeCode) ?? '';
+            $safeCode = trim($safeCode, '-_');
+            if ($safeCode === '') continue;
+            $games[$safeCode] = [
+                'title' => trim((string)($gameData['name'] ?? $safeCode)),
+                'subtitle' => 'NOW PLAYING',
+                'cover' => trim((string)($gameData['cover'] ?? '')),
+            ];
+        }
+    }
+}
+if ($games === []) {
+    $games['default'] = [
+        'title' => 'NOW PLAYING',
+        'subtitle' => 'GAME',
+        'cover' => '',
+    ];
+}
 
 $gameKey = strtolower(trim((string)($_GET['game'] ?? 'default')));
+$gameKey = preg_replace('/[^a-z0-9_-]+/', '-', $gameKey) ?? 'default';
+$gameKey = trim($gameKey, '-_');
 if (!isset($games[$gameKey])) {
-    $gameKey = 'default';
+    $gameKey = isset($games['default']) ? 'default' : (string)array_key_first($games);
 }
 $game = $games[$gameKey];
 
-$twitchChannel = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', (string)$config['twitchChannel']));
+$themeKey = strtolower(trim((string)($_GET['theme'] ?? 'synthwave')));
+$themeKey = preg_replace('/[^a-z0-9_-]+/', '-', $themeKey) ?? 'synthwave';
+$themeKey = trim($themeKey, '-_');
+if (!isset($themes[$themeKey])) {
+    $themeKey = 'synthwave';
+}
+
+$twitchChannel = twitchChannelFromUrl((string)$profile['twitch']);
+$socials = [
+    'youtube' => ['label' => 'YouTube', 'url' => (string)$profile['youtube'], 'display' => socialDisplay((string)$profile['youtube'], 'youtube')],
+    'twitch' => ['label' => 'Twitch', 'url' => (string)$profile['twitch'], 'display' => socialDisplay((string)$profile['twitch'], 'twitch')],
+    'discord' => ['label' => 'Discord', 'url' => (string)$profile['discord'], 'display' => socialDisplay((string)$profile['discord'], 'discord')],
+];
 $backgroundImage = trim((string)($config['backgroundImage'] ?? ''));
 $backgroundColor = trim((string)($config['backgroundColor'] ?? '#071127'));
 $backgroundOpacity = max(0.0, min(1.0, (float)($config['backgroundOpacity'] ?? 1.0)));
@@ -84,24 +135,48 @@ $chatVideoFit = in_array((string)($config['chatVideoFit'] ?? 'cover'), ['cover',
 function e(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
+
+function versionedAsset(string $path): string {
+    $path = trim($path);
+    if ($path === '' || preg_match('~^(?:https?:)?//~i', $path)) {
+        return $path;
+    }
+
+    $fullPath = __DIR__ . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+    if (!is_file($fullPath)) {
+        return $path;
+    }
+
+    $separator = str_contains($path, '?') ? '&' : '?';
+    return $path . $separator . 'v=' . (string)filemtime($fullPath);
+}
+
+$avatarUrl = versionedAsset((string)$config['avatar']);
+$backgroundImageUrl = versionedAsset($backgroundImage);
+$chatVideoMp4Url = versionedAsset($chatVideoMp4);
+$chatVideoWebmUrl = versionedAsset($chatVideoWebm);
+$gameCoverUrl = versionedAsset((string)($game['cover'] ?? ''));
+$gameCoverPath = trim((string)($game['cover'] ?? ''));
+$gameCoverExists = $gameCoverPath !== '' && is_file(__DIR__ . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $gameCoverPath));
 ?>
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Seija OBS — Game First</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <title>NeonCast OBS Overlay</title>
+    <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 <main
     id="overlay"
-    aria-label="Seija OBS Game First Overlay"
+    data-theme="<?= e($themeKey) ?>"
+    aria-label="NeonCast OBS Game First Overlay"
     style="--wallpaper-opacity: <?= e((string)$backgroundOpacity) ?>; --wallpaper-fit: <?= e($backgroundFit) ?>; --wallpaper-position: <?= e($backgroundPosition) ?>; --overlay-background-color: <?= e($backgroundColor) ?>; --game-area-color: <?= e($gameAreaColor) ?>;">
 
     <div id="wallpaper-layer" aria-hidden="true">
         <?php if ($backgroundImage !== ''): ?>
-        <img id="overlayWallpaper" src="<?= e($backgroundImage) ?>" alt="">
+        <img id="overlayWallpaper" src="<?= e($backgroundImageUrl) ?>" alt="">
         <?php endif; ?>
     </div>
 
@@ -111,12 +186,12 @@ function e(string $value): string {
     <aside id="side-panel">
         <section class="panel profile-panel">
             <div class="avatar-shell">
-                <img id="avatar" src="<?= e((string)$config['avatar']) ?>" alt="Seija avatar">
-                <div id="avatarFallback" class="avatar-fallback" aria-hidden="true">S</div>
+                <img id="avatar" src="<?= e($avatarUrl) ?>" alt="<?= e((string)$profile['pseudo']) ?> avatar">
+                <div id="avatarFallback" class="avatar-fallback" aria-hidden="true"><?= e(function_exists('mb_substr') ? mb_substr((string)$profile['pseudo'], 0, 1) : substr((string)$profile['pseudo'], 0, 1)) ?></div>
             </div>
             <div class="profile-copy">
                 <span class="profile-label">LIVE AS</span>
-                <strong class="pseudo"><?= e((string)$config['pseudo']) ?></strong>
+                <strong class="pseudo"><?= e((string)$profile['pseudo']) ?></strong>
             </div>
         </section>
 
@@ -140,31 +215,35 @@ function e(string $value): string {
                     preload="auto"
                     aria-hidden="true">
                     <?php if ($chatVideoWebm !== ''): ?>
-                    <source src="<?= e($chatVideoWebm) ?>" type="video/webm">
+                    <source src="<?= e($chatVideoWebmUrl) ?>" type="video/webm">
                     <?php endif; ?>
                     <?php if ($chatVideoMp4 !== ''): ?>
-                    <source src="<?= e($chatVideoMp4) ?>" type="video/mp4">
+                    <source src="<?= e($chatVideoMp4Url) ?>" type="video/mp4">
                     <?php endif; ?>
                 </video>
                 <?php endif; ?>
 
                 <div class="chat-video-tint" aria-hidden="true"></div>
-                <div id="chatStatus" class="chat-status">CONNECTING TO CHAT…</div>
+                <div id="chatStatus" class="chat-status"><?= $twitchChannel !== '' ? 'CONNECTING TO CHAT…' : 'TWITCH CHAT DISABLED' ?></div>
             </div>
         </section>
 
         <section class="panel cover-panel" aria-label="Game cover">
             <div class="panel-heading">NOW PLAYING <span>✦</span></div>
             <div class="cover-stage">
-                <img id="gameCover" src="<?= e((string)$game['cover']) ?>" alt="<?= e((string)$game['title']) ?> cover">
-                <div id="coverFallback" class="cover-fallback" aria-hidden="true">✦</div>
+                <?php if ($gameCoverExists): ?>
+                <img id="gameCover" src="<?= e($gameCoverUrl) ?>" alt="<?= e((string)$game['title']) ?> cover">
+                <?php else: ?>
+                <img id="gameCover" src="" alt="" style="display:none">
+                <?php endif; ?>
+                <div id="coverFallback" class="cover-fallback" aria-hidden="true"<?= $gameCoverExists ? ' style="display:none"' : '' ?>>✦</div>
             </div>
         </section>
     </aside>
 
     <nav id="bottom-bar" aria-label="Social links and game information">
         <?php foreach (['youtube', 'twitch', 'discord'] as $network):
-            $social = $config['socials'][$network];
+            $social = $socials[$network];
             $href = trim((string)$social['url']);
         ?>
         <a class="bottom-card social-card <?= e($network) ?><?= $href === '' ? ' disabled' : '' ?>"
@@ -196,6 +275,6 @@ function e(string $value): string {
     </nav>
 
 </main>
-<script src="overlay.js?v=4"></script>
+<script src="overlay.js?v=5"></script>
 </body>
 </html>
