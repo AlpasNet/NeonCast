@@ -6,15 +6,15 @@
     "posX": 0,
     "posY": 0,
     "title": "Your Title",
-    "subtitle": "Your subtitle",
+    "subtitle": "Your Subtitle",
     "titleSize": 72,
     "subtitleSize": 28,
     "align": "left",
     "textVertical": "bottom",
     "fontTheme": "synthwave",
-    "site": "your website",
-    "twitch": "twitch.tv/your_name",
-    "youtube": "@YourName",
+    "site": "website",
+    "twitch": "twitch.tv/name",
+    "youtube": "@name",
     "showLinks": true,
     "showSafe": true,
     "showBrandLogo": true,
@@ -26,5 +26,5 @@
     "portraitY": 340,
     "backgroundAsset": "assets/saved-background.png",
     "portraitAsset": "assets/saved-portrait.png",
-    "brandLogoAsset": ""
+    "brandLogoAsset": "assets/saved-brand-logo.png"
 }

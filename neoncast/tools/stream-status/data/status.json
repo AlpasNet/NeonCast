@@ -1,0 +1,9 @@
+{
+    "logo_position": "right",
+    "logo_width": 300,
+    "texts": {
+        "intro": "THE STREAM IS STARTING SOON",
+        "pause": "I WILL BE RIGHT BACK",
+        "end": "THE STREAM IS ENDING SOON"
+    }
+}

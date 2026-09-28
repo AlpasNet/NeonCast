@@ -34,6 +34,16 @@ $tools = [
         'icon' => '◫',
         'accent' => 'cyan',
     ],
+    [
+        'title' => 'Stream Status',
+        'eyebrow' => 'Starting / Intro / Break / Ending',
+        'description' => 'Create full-screen OBS status scenes with separate looping videos, optional looping music, custom bottom text and a configurable corner logo.',
+        'href' => 'tools/stream-status/config.php',
+        'secondary_href' => '',
+        'secondary_label' => '',
+        'icon' => '◉',
+        'accent' => 'violet',
+    ],
 ];
 
 foreach ($tools as &$tool) {
@@ -102,7 +112,7 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
 .lead{max-width:750px;margin:0 auto;color:var(--muted);line-height:1.65;font-size:15px}
 .tools-title{display:flex;align-items:center;gap:14px;margin:30px 2px 16px;font-size:20px}
 .tools-title:before,.tools-title:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .card{
   position:relative;
   overflow:hidden;
@@ -118,6 +128,7 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
 .card:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,var(--pink),var(--cyan))}
 .card.pink{--card-accent:var(--pink)}
 .card.cyan{--card-accent:var(--cyan)}
+.card.violet{--card-accent:var(--violet)}
 .icon{
   width:62px;height:62px;border-radius:17px;display:grid;place-items:center;
   border:1px solid color-mix(in srgb,var(--card-accent) 55%, transparent);
@@ -142,6 +153,7 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
 .status{margin-top:12px;font-size:12px;color:#79ffd8;font-weight:800}
 .status.off{color:#ff8aa7}
 .footer{text-align:center;color:#8e94b6;font-size:12px;margin-top:28px;letter-spacing:.04em}
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){body{padding:18px 12px 34px}.hero{padding:25px 18px}.grid{grid-template-columns:1fr}.card{min-height:260px}.tools-title{margin-top:24px}}
 </style>
 </head>

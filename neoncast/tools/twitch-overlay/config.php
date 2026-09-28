@@ -509,7 +509,7 @@ $phpPostLimit = iniBytes((string)ini_get('post_max_size'));
     <p class="lead">Configure your streamer identity and social links, replace the main overlay assets, manage game covers and generate the final OBS link for any game and neon color theme.</p>
     <?php foreach ($messages as $message): ?><div class="notice ok"><?= h($message) ?></div><?php endforeach; ?>
     <?php foreach ($errors as $error): ?><div class="notice bad"><?= h($error) ?></div><?php endforeach; ?>
-    <div class="links"><a href="index.php" target="_blank" rel="noopener">Open overlay</a></div>
+    <div class="links"><a href="../../index.php">Back to NeonCast Tools</a></div>
   </header>
 
   <section class="section-head">
