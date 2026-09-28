@@ -382,6 +382,7 @@ button:hover,.file-btn:hover{filter:brightness(1.08)}
 .theme-name{font-size:13px;color:var(--muted)}
 .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.config-status{min-height:22px;margin-top:12px;font-size:13px;font-weight:800;color:var(--ok)}.config-status.error{color:var(--bad)}
 .meta{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.55}
+.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.links a{color:var(--text);text-decoration:none;border:1px solid rgba(255,43,214,.42);background:rgba(255,43,214,.08);padding:10px 14px;border-radius:10px;font-weight:800}.links a:hover{border-color:var(--cyan)}
 @media(max-width:900px){.grid,.grid.three{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
 @media(max-width:620px){body{padding:14px 10px}.head,.section-head{padding:20px 16px}.card{padding:14px}.file-control{grid-template-columns:1fr}.actions{grid-template-columns:1fr}}
 </style>
@@ -392,6 +393,7 @@ button:hover,.file-btn:hover{filter:brightness(1.08)}
     <div class="brand"><img src="assets/config-logo.png?v=<?= assetVersion(__DIR__ . '/assets/config-logo.png') ?>" alt="NeonCast"></div>
     <h1>Thumbnail Builder</h1>
     <p class="lead">Create a 1280 × 720 thumbnail with custom artwork, branding, portrait, a neon title, pearl-white supporting text and social links. Everything is configured directly on this page.</p>
+    <div class="links"><a href="../../index.php">Back to NeonCast Tools</a></div>
   </header>
 
   <section class="section-head">

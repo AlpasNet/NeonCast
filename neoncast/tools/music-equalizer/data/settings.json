@@ -1,0 +1,12 @@
+{
+    "background": "assets/background.png",
+    "square_size": 70,
+    "logo_size": 58,
+    "author_size": 18,
+    "player_title": "Music Player",
+    "player_subtitle": "Sélène L. IMBERT",
+    "player_title_size": 50,
+    "player_subtitle_size": 20,
+    "theme": "synthwave",
+    "equalizer_opacity": 85
+}
