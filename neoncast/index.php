@@ -15,6 +15,26 @@ function assetVersion(string $path): string {
 
 $tools = [
     [
+        'title' => 'Music Equalizer',
+        'eyebrow' => 'Audio / Visualizer',
+        'description' => 'Build an ordered music playlist with a custom background, one square video per track, titles and authors, then play the full sequence through one OBS link with a reactive neon equalizer.',
+        'href' => 'tools/music-equalizer/config.php',
+        'secondary_href' => '',
+        'secondary_label' => '',
+        'icon' => '≋',
+        'accent' => 'gold',
+    ],
+    [
+        'title' => 'Stream Status',
+        'eyebrow' => 'Starting / Intro / Break / Ending',
+        'description' => 'Create full-screen OBS status scenes with separate looping videos, optional looping music, custom bottom text and a configurable corner logo.',
+        'href' => 'tools/stream-status/config.php',
+        'secondary_href' => '',
+        'secondary_label' => '',
+        'icon' => '◉',
+        'accent' => 'violet',
+    ],
+    [
         'title' => 'Thumbnail Builder',
         'eyebrow' => 'YouTube / Twitch Visuals',
         'description' => 'Create 16:9 thumbnails with saved settings, replaceable images, neon color themes and PNG export.',
@@ -33,16 +53,6 @@ $tools = [
         'secondary_label' => '',
         'icon' => '◫',
         'accent' => 'cyan',
-    ],
-    [
-        'title' => 'Stream Status',
-        'eyebrow' => 'Starting / Intro / Break / Ending',
-        'description' => 'Create full-screen OBS status scenes with separate looping videos, optional looping music, custom bottom text and a configurable corner logo.',
-        'href' => 'tools/stream-status/config.php',
-        'secondary_href' => '',
-        'secondary_label' => '',
-        'icon' => '◉',
-        'accent' => 'violet',
     ],
 ];
 
@@ -112,7 +122,7 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
 .lead{max-width:750px;margin:0 auto;color:var(--muted);line-height:1.65;font-size:15px}
 .tools-title{display:flex;align-items:center;gap:14px;margin:30px 2px 16px;font-size:20px}
 .tools-title:before,.tools-title:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent)}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 .card{
   position:relative;
   overflow:hidden;
@@ -129,6 +139,7 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
 .card.pink{--card-accent:var(--pink)}
 .card.cyan{--card-accent:var(--cyan)}
 .card.violet{--card-accent:var(--violet)}
+.card.gold{--card-accent:#ffd35a}
 .icon{
   width:62px;height:62px;border-radius:17px;display:grid;place-items:center;
   border:1px solid color-mix(in srgb,var(--card-accent) 55%, transparent);
@@ -162,7 +173,6 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
   <section class="hero">
     <img class="logo" src="assets/neoncast-logo.png?v=<?= h(assetVersion(__DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'neoncast-logo.png')) ?>" alt="NeonCast">
     <p class="kicker">Retro tools for OBS & Twitch</p>
-    <h1>NeonCast Tools</h1>
     <p class="lead">Choose a tool below. Each workspace keeps its own configuration and assets while sharing the same retro neon identity.</p>
   </section>
 
@@ -181,7 +191,6 @@ h1{font-size:clamp(28px,5vw,48px);margin:0 0 10px;letter-spacing:-.03em}
             <a class="btn secondary" href="<?= h($tool['secondary_href']) ?>" target="_blank" rel="noopener"><?= h($tool['secondary_label']) ?></a>
           <?php endif; ?>
         </div>
-        <div class="status<?= $tool['available'] ? '' : ' off' ?>"><?= $tool['available'] ? 'Ready' : 'Tool files not found' ?></div>
       </article>
     <?php endforeach; ?>
   </section>
